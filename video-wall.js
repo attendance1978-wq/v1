@@ -1,3 +1,17 @@
+/**
+ * Video Wall Player v2
+ * Custom HTML5 Video Web Component
+ *
+ * GitHub:
+ * https://github.com/attendance1978-wq/v1
+ *
+ * Usage:
+ *
+ * <video-wall-player
+ *     src="video.mp4">
+ * </video-wall-player>
+ */
+
 class VideoWallPlayer extends HTMLElement {
 
     constructor() {
@@ -20,6 +34,17 @@ class VideoWallPlayer extends HTMLElement {
 
                 height: 100%;
 
+                min-height: 200px;
+
+                font-family: Arial, sans-serif;
+
+            }
+
+
+            * {
+
+                box-sizing: border-box;
+
             }
 
 
@@ -39,6 +64,8 @@ class VideoWallPlayer extends HTMLElement {
 
                 border-radius: 5px;
 
+                user-select: none;
+
             }
 
 
@@ -50,9 +77,76 @@ class VideoWallPlayer extends HTMLElement {
 
                 height: calc(100% - 38px);
 
+                background: white;
+
                 object-fit: contain;
 
-                background: white;
+            }
+
+
+            /* =========================
+               VIDEO WALL BRAND
+            ========================= */
+
+            .brand-logo {
+
+                position: absolute;
+
+                top: 12px;
+
+                left: 12px;
+
+                z-index: 4;
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 6px;
+
+                padding: 5px 8px;
+
+                color: #333;
+
+                background: rgba(255, 255, 255, 0.82);
+
+                border-radius: 4px;
+
+                font-size: 10px;
+
+                font-weight: bold;
+
+                pointer-events: none;
+
+            }
+
+
+            .brand-icon {
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                width: 18px;
+
+                height: 18px;
+
+                border-radius: 50%;
+
+                background: #111;
+
+                color: white;
+
+                font-size: 8px;
+
+            }
+
+
+            .brand-text {
+
+                letter-spacing: 1px;
 
             }
 
@@ -69,13 +163,13 @@ class VideoWallPlayer extends HTMLElement {
 
                 left: 0;
 
-                z-index: 5;
+                z-index: 10;
 
                 width: 100%;
 
                 height: 5px;
 
-                background: #c6aaaa;
+                background: #c7aaaa;
 
                 cursor: pointer;
 
@@ -94,16 +188,18 @@ class VideoWallPlayer extends HTMLElement {
 
 
             /* =========================
-               CONTROL BAR
+               CONTROLS
             ========================= */
 
             .controls {
 
                 position: absolute;
 
+                left: 0;
+
                 bottom: 0;
 
-                left: 0;
+                z-index: 10;
 
                 width: 100%;
 
@@ -116,6 +212,19 @@ class VideoWallPlayer extends HTMLElement {
                 align-items: center;
 
                 justify-content: center;
+
+                transition: opacity 0.25s ease;
+
+            }
+
+
+            .player.hide-controls
+
+            .controls {
+
+                opacity: 0;
+
+                pointer-events: none;
 
             }
 
@@ -142,10 +251,6 @@ class VideoWallPlayer extends HTMLElement {
             }
 
 
-            /* =========================
-               ROUND BUTTONS
-            ========================= */
-
             button {
 
                 border: none;
@@ -167,6 +272,8 @@ class VideoWallPlayer extends HTMLElement {
 
                 height: 27px;
 
+                padding: 0;
+
                 border-radius: 50%;
 
                 background: #eeeeee;
@@ -174,8 +281,6 @@ class VideoWallPlayer extends HTMLElement {
                 color: #111;
 
                 font-size: 15px;
-
-                padding: 0;
 
             }
 
@@ -193,10 +298,6 @@ class VideoWallPlayer extends HTMLElement {
 
             }
 
-
-            /* =========================
-               RIGHT CONTROLS
-            ========================= */
 
             .side-controls {
 
@@ -223,9 +324,9 @@ class VideoWallPlayer extends HTMLElement {
 
                 background: transparent;
 
-                color: black;
+                color: #000;
 
-                font-size: 19px;
+                font-size: 18px;
 
             }
 
@@ -233,6 +334,128 @@ class VideoWallPlayer extends HTMLElement {
             .icon-button:hover {
 
                 transform: scale(1.1);
+
+            }
+
+
+            /* =========================
+               GITHUB LOGO
+            ========================= */
+
+            .github-logo {
+
+                width: 23px;
+
+                height: 28px;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                color: #000;
+
+                text-decoration: none;
+
+                cursor: pointer;
+
+            }
+
+
+            .github-logo svg {
+
+                width: 18px;
+
+                height: 18px;
+
+                fill: currentColor;
+
+                transition:
+
+                    transform 0.2s ease,
+
+                    opacity 0.2s ease;
+
+            }
+
+
+            .github-logo:hover svg {
+
+                transform: scale(1.2);
+
+                opacity: 0.7;
+
+            }
+
+
+            /* =========================
+               VOLUME
+            ========================= */
+
+            .volume {
+
+                width: 60px;
+
+                height: 3px;
+
+                cursor: pointer;
+
+                accent-color: black;
+
+            }
+
+
+            /* =========================
+               SPEED MENU
+            ========================= */
+
+            .speed-menu {
+
+                position: absolute;
+
+                right: 8px;
+
+                bottom: 45px;
+
+                z-index: 30;
+
+                display: none;
+
+                padding: 5px;
+
+                background: white;
+
+                border: 1px solid #777;
+
+            }
+
+
+            .speed-menu.show {
+
+                display: block;
+
+            }
+
+
+            .speed-menu button {
+
+                display: block;
+
+                width: 55px;
+
+                padding: 5px;
+
+                background: white;
+
+                font-size: 11px;
+
+            }
+
+
+            .speed-menu button:hover {
+
+                background: #ddd;
 
             }
 
@@ -279,8 +502,6 @@ class VideoWallPlayer extends HTMLElement {
 
                 font-size: 18px;
 
-                color: black;
-
             }
 
 
@@ -288,11 +509,58 @@ class VideoWallPlayer extends HTMLElement {
 
                 margin-left: 95px;
 
-                font-size: 20px;
-
                 color: #111;
 
+                font-size: 20px;
+
             }
+
+
+            /* =========================
+               CENTER PLAY BUTTON
+            ========================= */
+
+            .center-play {
+
+                position: absolute;
+
+                top: 50%;
+
+                left: 50%;
+
+                z-index: 5;
+
+                width: 55px;
+
+                height: 55px;
+
+                border-radius: 50%;
+
+                background: rgba(255, 255, 255, 0.85);
+
+                font-size: 25px;
+
+                transform: translate(-50%, -50%);
+
+                opacity: 0;
+
+                pointer-events: none;
+
+                transition: opacity 0.2s;
+
+            }
+
+
+            .player.paused
+
+            .center-play {
+
+                opacity: 1;
+
+                pointer-events: auto;
+
+            }
+
 
         </style>
 
@@ -300,7 +568,7 @@ class VideoWallPlayer extends HTMLElement {
         <div class="player">
 
 
-            <!-- PROGRESS -->
+            <!-- PROGRESS BAR -->
 
             <div class="progress">
 
@@ -314,9 +582,39 @@ class VideoWallPlayer extends HTMLElement {
             <video></video>
 
 
+            <!-- BRAND LOGO -->
+
+            <div class="brand-logo">
+
+                <span class="brand-icon">
+
+                    ▶
+
+                </span>
+
+
+                <span class="brand-text">
+
+                    VIDEO WALL
+
+                </span>
+
+            </div>
+
+
+            <!-- CENTER PLAY -->
+
+            <button class="center-play">
+
+                ▶
+
+            </button>
+
+
             <!-- FULLSCREEN OVERLAY -->
 
             <div class="fullscreen-overlay">
+
 
                 <button class="overlay-fullscreen">
 
@@ -331,6 +629,50 @@ class VideoWallPlayer extends HTMLElement {
 
                 </span>
 
+
+            </div>
+
+
+            <!-- SPEED MENU -->
+
+            <div class="speed-menu">
+
+
+                <button data-speed="0.5">
+
+                    0.5x
+
+                </button>
+
+
+                <button data-speed="1">
+
+                    1x
+
+                </button>
+
+
+                <button data-speed="1.25">
+
+                    1.25x
+
+                </button>
+
+
+                <button data-speed="1.5">
+
+                    1.5x
+
+                </button>
+
+
+                <button data-speed="2">
+
+                    2x
+
+                </button>
+
+
             </div>
 
 
@@ -342,9 +684,9 @@ class VideoWallPlayer extends HTMLElement {
                 <div class="control-center">
 
 
-                    <span class="time">
+                    <span class="time current-time">
 
-                        -10
+                        0:00
 
                     </span>
 
@@ -382,9 +724,9 @@ class VideoWallPlayer extends HTMLElement {
                     </button>
 
 
-                    <span class="time">
+                    <span class="time duration">
 
-                        +10
+                        0:00
 
                     </span>
 
@@ -395,16 +737,24 @@ class VideoWallPlayer extends HTMLElement {
                 <div class="side-controls">
 
 
-                    <button
+                    <!-- VOLUME -->
 
-                        class="icon-button fullscreen"
+                    <input
 
-                        title="Fullscreen">
+                        class="volume"
 
-                        ⛶
+                        type="range"
 
-                    </button>
+                        min="0"
 
+                        max="1"
+
+                        step="0.01"
+
+                        value="1">
+
+
+                    <!-- MUTE -->
 
                     <button
 
@@ -413,6 +763,110 @@ class VideoWallPlayer extends HTMLElement {
                         title="Mute">
 
                         🔊
+
+                    </button>
+
+
+                    <!-- SPEED -->
+
+                    <button
+
+                        class="icon-button speed"
+
+                        title="Playback speed">
+
+                        ⚙
+
+                    </button>
+
+
+                    <!-- PICTURE IN PICTURE -->
+
+                    <button
+
+                        class="icon-button pip"
+
+                        title="Picture in Picture">
+
+                        ▣
+
+                    </button>
+
+
+                    <!-- GITHUB -->
+
+                    <a
+
+                        class="github-logo"
+
+                        href="https://github.com/attendance1978-wq/v1"
+
+                        target="_blank"
+
+                        rel="noopener noreferrer"
+
+                        title="View Video Wall on GitHub">
+
+
+                        <svg
+
+                            viewBox="0 0 24 24"
+
+                            aria-hidden="true">
+
+
+                            <path
+
+                                d="M12 .5C5.65.5.5 5.65.5 12c0 5.08
+
+                                3.29 9.39 7.86 10.91.57.1.78-.25.78-.55
+
+                                0-.27-.01-1-.01-1.96-3.2.7-3.88-1.54
+
+                                -3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69
+
+                                -1.05-.72.08-.71.08-.71 1.16.08 1.77
+
+                                1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36
+
+                                .96.1-.75.4-1.26.73-1.55-2.56-.29-5.26
+
+                                -1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1
+
+                                -.12-.29-.52-1.47.11-3.06 0 0 .97-.31
+
+                                3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49
+
+                                3.17-1.18 3.17-1.18.63 1.59.23 2.77.11
+
+                                3.06.74.81 1.19 1.84 1.19 3.1 0 4.43
+
+                                -2.7 5.41-5.27 5.69.41.36.78 1.08.78 2.18
+
+                                0 1.57-.01 2.83-.01 3.21 0 .3.21.66.79.55
+
+                                A11.51 11.51 0 0 0 23.5 12C23.5 5.65
+
+                                18.35.5 12 .5Z">
+
+                            </path>
+
+
+                        </svg>
+
+
+                    </a>
+
+
+                    <!-- FULLSCREEN -->
+
+                    <button
+
+                        class="icon-button fullscreen"
+
+                        title="Fullscreen">
+
+                        ⛶
 
                     </button>
 
@@ -430,101 +884,276 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        GET VIDEO ELEMENT
+        ELEMENTS
         =========================
         */
 
         this.video =
+
             this.shadowRoot.querySelector(
+
                 "video"
+
             );
 
 
-        /*
-        =========================
-        SET VIDEO SOURCE
-        =========================
-        */
+        this.player =
+
+            this.shadowRoot.querySelector(
+
+                ".player"
+
+            );
+
+
+        this.playButton =
+
+            this.shadowRoot.querySelector(
+
+                ".play"
+
+            );
+
+
+        this.centerPlay =
+
+            this.shadowRoot.querySelector(
+
+                ".center-play"
+
+            );
+
+
+        this.progress =
+
+            this.shadowRoot.querySelector(
+
+                ".progress"
+
+            );
+
+
+        this.progressValue =
+
+            this.shadowRoot.querySelector(
+
+                ".progress-value"
+
+            );
+
+
+        this.currentTimeElement =
+
+            this.shadowRoot.querySelector(
+
+                ".current-time"
+
+            );
+
+
+        this.durationElement =
+
+            this.shadowRoot.querySelector(
+
+                ".duration"
+
+            );
+
 
         this.video.src =
-            this.getAttribute("src") || "";
+
+            this.getAttribute(
+
+                "src"
+
+            ) || "";
 
 
-        this.video.preload =
-            "metadata";
+        this.video.controls = false;
+
+        this.video.preload = "metadata";
+
+        this.video.playsInline = true;
 
 
-        this.video.playsInline =
-            true;
+        this.setupAttributes();
+
+        this.setupEvents();
 
 
-        this.video.controls =
-            false;
+        this.player.classList.add(
 
+            "paused"
 
-        /*
-        =========================
-        INITIALIZE CONTROLS
-        =========================
-        */
+        );
 
-        this.setupControls();
 
     }
 
 
-    setupControls() {
+    /*
+    =========================
+    ATTRIBUTES
+    =========================
+    */
+
+    setupAttributes() {
+
+
+        if (
+
+            this.hasAttribute(
+
+                "loop"
+
+            )
+
+        ) {
+
+
+            this.video.loop = true;
+
+
+        }
+
+
+        if (
+
+            this.hasAttribute(
+
+                "muted"
+
+            )
+
+        ) {
+
+
+            this.video.muted = true;
+
+
+        }
+
+
+        if (
+
+            this.hasAttribute(
+
+                "autoplay"
+
+            )
+
+            &&
+
+            this.getAttribute(
+
+                "autoplay"
+
+            ) !== "false"
+
+        ) {
+
+
+            this.video.autoplay = true;
+
+
+        }
+
+
+    }
+
+
+    /*
+    =========================
+    EVENTS
+    =========================
+    */
+
+    setupEvents() {
 
 
         const root =
+
             this.shadowRoot;
 
 
-        const playButton =
-            root.querySelector(
-                ".play"
-            );
+        const backward =
 
-
-        const backwardButton =
             root.querySelector(
+
                 ".backward"
+
             );
 
 
-        const forwardButton =
+        const forward =
+
             root.querySelector(
+
                 ".forward"
+
             );
 
 
-        const fullscreenButton =
+        const mute =
+
             root.querySelector(
-                ".fullscreen"
-            );
 
-
-        const overlayFullscreenButton =
-            root.querySelector(
-                ".overlay-fullscreen"
-            );
-
-
-        const muteButton =
-            root.querySelector(
                 ".mute"
+
             );
 
 
-        const progress =
+        const volume =
+
             root.querySelector(
-                ".progress"
+
+                ".volume"
+
             );
 
 
-        const progressValue =
+        const fullscreen =
+
             root.querySelector(
-                ".progress-value"
+
+                ".fullscreen"
+
+            );
+
+
+        const overlayFullscreen =
+
+            root.querySelector(
+
+                ".overlay-fullscreen"
+
+            );
+
+
+        const pip =
+
+            root.querySelector(
+
+                ".pip"
+
+            );
+
+
+        const speed =
+
+            root.querySelector(
+
+                ".speed"
+
+            );
+
+
+        const speedMenu =
+
+            root.querySelector(
+
+                ".speed-menu"
+
             );
 
 
@@ -534,52 +1163,26 @@ class VideoWallPlayer extends HTMLElement {
         =========================
         */
 
-        playButton.addEventListener(
+        this.playButton.addEventListener(
 
             "click",
 
-            async () => {
+            () => {
+
+                this.togglePlay();
+
+            }
+
+        );
 
 
-                if (
-                    this.video.paused ||
-                    this.video.ended
-                ) {
+        this.centerPlay.addEventListener(
 
+            "click",
 
-                    try {
+            () => {
 
-
-                        await this.video.play();
-
-
-                    }
-
-                    catch (error) {
-
-
-                        console.error(
-
-                            "Video play error:",
-
-                            error
-
-                        );
-
-
-                    }
-
-
-                }
-
-                else {
-
-
-                    this.video.pause();
-
-
-                }
-
+                this.togglePlay();
 
             }
 
@@ -588,7 +1191,7 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        WHEN VIDEO PLAYS
+        VIDEO PLAY
         =========================
         */
 
@@ -599,12 +1202,37 @@ class VideoWallPlayer extends HTMLElement {
             () => {
 
 
-                playButton.textContent =
+                this.playButton.textContent =
+
                     "Ⅱ";
 
 
-                playButton.title =
+                this.playButton.title =
+
                     "Pause";
+
+
+                this.centerPlay.textContent =
+
+                    "Ⅱ";
+
+
+                this.player.classList.remove(
+
+                    "paused"
+
+                );
+
+
+                this.dispatchEvent(
+
+                    new CustomEvent(
+
+                        "video-play"
+
+                    )
+
+                );
 
 
             }
@@ -614,7 +1242,7 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        WHEN VIDEO PAUSES
+        VIDEO PAUSE
         =========================
         */
 
@@ -625,12 +1253,37 @@ class VideoWallPlayer extends HTMLElement {
             () => {
 
 
-                playButton.textContent =
+                this.playButton.textContent =
+
                     "▶";
 
 
-                playButton.title =
+                this.playButton.title =
+
                     "Play";
+
+
+                this.centerPlay.textContent =
+
+                    "▶";
+
+
+                this.player.classList.add(
+
+                    "paused"
+
+                );
+
+
+                this.dispatchEvent(
+
+                    new CustomEvent(
+
+                        "video-pause"
+
+                    )
+
+                );
 
 
             }
@@ -640,7 +1293,7 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        WHEN VIDEO ENDS
+        VIDEO ENDED
         =========================
         */
 
@@ -651,12 +1304,26 @@ class VideoWallPlayer extends HTMLElement {
             () => {
 
 
-                playButton.textContent =
+                this.playButton.textContent =
+
                     "▶";
 
 
-                playButton.title =
+                this.playButton.title =
+
                     "Play";
+
+
+                this.centerPlay.textContent =
+
+                    "▶";
+
+
+                this.player.classList.add(
+
+                    "paused"
+
+                );
 
 
             }
@@ -670,7 +1337,7 @@ class VideoWallPlayer extends HTMLElement {
         =========================
         */
 
-        backwardButton.addEventListener(
+        backward.addEventListener(
 
             "click",
 
@@ -699,7 +1366,7 @@ class VideoWallPlayer extends HTMLElement {
         =========================
         */
 
-        forwardButton.addEventListener(
+        forward.addEventListener(
 
             "click",
 
@@ -716,11 +1383,54 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        MUTE / UNMUTE
+        VOLUME
         =========================
         */
 
-        muteButton.addEventListener(
+        volume.addEventListener(
+
+            "input",
+
+            () => {
+
+
+                this.video.volume =
+
+                    Number(
+
+                        volume.value
+
+                    );
+
+
+                this.video.muted =
+
+                    Number(
+
+                        volume.value
+
+                    ) === 0;
+
+
+                this.updateMuteIcon(
+
+                    mute
+
+                );
+
+
+            }
+
+        );
+
+
+        /*
+        =========================
+        MUTE
+        =========================
+        */
+
+        mute.addEventListener(
 
             "click",
 
@@ -728,36 +1438,15 @@ class VideoWallPlayer extends HTMLElement {
 
 
                 this.video.muted =
+
                     !this.video.muted;
 
 
-                if (
-                    this.video.muted
-                ) {
+                this.updateMuteIcon(
 
+                    mute
 
-                    muteButton.textContent =
-                        "🔇";
-
-
-                    muteButton.title =
-                        "Unmute";
-
-
-                }
-
-                else {
-
-
-                    muteButton.textContent =
-                        "🔊";
-
-
-                    muteButton.title =
-                        "Mute";
-
-
-                }
+                );
 
 
             }
@@ -771,7 +1460,7 @@ class VideoWallPlayer extends HTMLElement {
         =========================
         */
 
-        fullscreenButton.addEventListener(
+        fullscreen.addEventListener(
 
             "click",
 
@@ -786,7 +1475,7 @@ class VideoWallPlayer extends HTMLElement {
         );
 
 
-        overlayFullscreenButton.addEventListener(
+        overlayFullscreen.addEventListener(
 
             "click",
 
@@ -803,7 +1492,137 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        UPDATE PROGRESS
+        PICTURE IN PICTURE
+        =========================
+        */
+
+        pip.addEventListener(
+
+            "click",
+
+            async () => {
+
+
+                if (
+
+                    !document.pictureInPictureElement
+
+                ) {
+
+
+                    try {
+
+
+                        await this.video
+
+                            .requestPictureInPicture();
+
+
+                    }
+
+                    catch (error) {
+
+
+                        console.error(
+
+                            "PiP error:",
+
+                            error
+
+                        );
+
+
+                    }
+
+
+                }
+
+                else {
+
+
+                    await document
+
+                        .exitPictureInPicture();
+
+
+                }
+
+
+            }
+
+        );
+
+
+        /*
+        =========================
+        SPEED MENU
+        =========================
+        */
+
+        speed.addEventListener(
+
+            "click",
+
+            () => {
+
+
+                speedMenu.classList.toggle(
+
+                    "show"
+
+                );
+
+
+            }
+
+        );
+
+
+        root.querySelectorAll(
+
+            "[data-speed]"
+
+        ).forEach(
+
+            button => {
+
+
+                button.addEventListener(
+
+                    "click",
+
+                    () => {
+
+
+                        this.video.playbackRate =
+
+                            Number(
+
+                                button.dataset.speed
+
+                            );
+
+
+                        speedMenu.classList.remove(
+
+                            "show"
+
+                        );
+
+
+                    }
+
+                );
+
+
+            }
+
+        );
+
+
+        /*
+        =========================
+        PROGRESS UPDATE
         =========================
         */
 
@@ -816,11 +1635,7 @@ class VideoWallPlayer extends HTMLElement {
 
                 if (
 
-                    !this.video.duration ||
-
-                    isNaN(
-                        this.video.duration
-                    )
+                    !this.video.duration
 
                 ) {
 
@@ -833,7 +1648,6 @@ class VideoWallPlayer extends HTMLElement {
 
                 const percentage =
 
-
                     (
 
                         this.video.currentTime /
@@ -843,9 +1657,18 @@ class VideoWallPlayer extends HTMLElement {
                     ) * 100;
 
 
-                progressValue.style.width =
+                this.progressValue.style.width =
 
                     `${percentage}%`;
+
+
+                this.currentTimeElement.textContent =
+
+                    this.formatTime(
+
+                        this.video.currentTime
+
+                    );
 
 
             }
@@ -855,15 +1678,42 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        CLICK PROGRESS TO SEEK
+        VIDEO METADATA
         =========================
         */
 
-        progress.addEventListener(
+        this.video.addEventListener(
+
+            "loadedmetadata",
+
+            () => {
+
+
+                this.durationElement.textContent =
+
+                    this.formatTime(
+
+                        this.video.duration
+
+                    );
+
+
+            }
+
+        );
+
+
+        /*
+        =========================
+        SEEK
+        =========================
+        */
+
+        this.progress.addEventListener(
 
             "click",
 
-            (event) => {
+            event => {
 
 
                 if (
@@ -881,11 +1731,12 @@ class VideoWallPlayer extends HTMLElement {
 
                 const rect =
 
-                    progress.getBoundingClientRect();
+                    this.progress
+
+                        .getBoundingClientRect();
 
 
                 const percentage =
-
 
                     (
 
@@ -897,7 +1748,6 @@ class VideoWallPlayer extends HTMLElement {
 
 
                 this.video.currentTime =
-
 
                     percentage *
 
@@ -911,7 +1761,7 @@ class VideoWallPlayer extends HTMLElement {
 
         /*
         =========================
-        DOUBLE CLICK VIDEO
+        DOUBLE CLICK FULLSCREEN
         =========================
         */
 
@@ -930,25 +1780,257 @@ class VideoWallPlayer extends HTMLElement {
         );
 
 
+        /*
+        =========================
+        KEYBOARD CONTROLS
+        =========================
+        */
+
+        this.player.tabIndex = 0;
+
+
+        this.player.addEventListener(
+
+            "keydown",
+
+            event => {
+
+
+                switch (
+
+                    event.key
+
+                ) {
+
+
+                    case " ":
+
+                        event.preventDefault();
+
+                        this.togglePlay();
+
+                        break;
+
+
+                    case "ArrowLeft":
+
+                        this.video.currentTime -= 10;
+
+                        break;
+
+
+                    case "ArrowRight":
+
+                        this.video.currentTime += 10;
+
+                        break;
+
+
+                    case "m":
+
+                    case "M":
+
+                        this.video.muted =
+
+                            !this.video.muted;
+
+
+                        this.updateMuteIcon(
+
+                            mute
+
+                        );
+
+
+                        break;
+
+
+                    case "f":
+
+                    case "F":
+
+                        this.toggleFullscreen();
+
+                        break;
+
+
+                }
+
+
+            }
+
+        );
+
+
+        /*
+        =========================
+        AUTO HIDE CONTROLS
+        =========================
+        */
+
+        let hideTimer;
+
+
+        this.player.addEventListener(
+
+            "mousemove",
+
+            () => {
+
+
+                this.player.classList.remove(
+
+                    "hide-controls"
+
+                );
+
+
+                clearTimeout(
+
+                    hideTimer
+
+                );
+
+
+                hideTimer = setTimeout(
+
+                    () => {
+
+
+                        if (
+
+                            !this.video.paused
+
+                        ) {
+
+
+                            this.player.classList.add(
+
+                                "hide-controls"
+
+                            );
+
+
+                        }
+
+
+                    },
+
+                    3000
+
+                );
+
+
+            }
+
+        );
+
+
     }
 
 
     /*
     =========================
-    FULLSCREEN FUNCTION
+    PLAY / PAUSE
+    =========================
+    */
+
+    async togglePlay() {
+
+
+        if (
+
+            this.video.paused ||
+
+            this.video.ended
+
+        ) {
+
+
+            try {
+
+
+                if (
+
+                    this.video.ended
+
+                ) {
+
+
+                    this.video.currentTime = 0;
+
+
+                }
+
+
+                await this.video.play();
+
+
+            }
+
+            catch (error) {
+
+
+                console.error(
+
+                    "Unable to play video:",
+
+                    error
+
+                );
+
+
+            }
+
+
+        }
+
+        else {
+
+
+            this.video.pause();
+
+
+        }
+
+
+    }
+
+
+    /*
+    =========================
+    MUTE ICON
+    =========================
+    */
+
+    updateMuteIcon(
+
+        button
+
+    ) {
+
+
+        button.textContent =
+
+            this.video.muted ||
+
+            this.video.volume === 0
+
+                ? "🔇"
+
+                : "🔊";
+
+
+    }
+
+
+    /*
+    =========================
+    FULLSCREEN
     =========================
     */
 
     toggleFullscreen() {
-
-
-        const player =
-
-            this.shadowRoot.querySelector(
-
-                ".player"
-
-            );
 
 
         if (
@@ -958,17 +2040,7 @@ class VideoWallPlayer extends HTMLElement {
         ) {
 
 
-            if (
-
-                player.requestFullscreen
-
-            ) {
-
-
-                player.requestFullscreen();
-
-
-            }
+            this.player.requestFullscreen();
 
 
         }
@@ -983,6 +2055,67 @@ class VideoWallPlayer extends HTMLElement {
 
 
     }
+
+
+    /*
+    =========================
+    FORMAT TIME
+    =========================
+    */
+
+    formatTime(
+
+        seconds
+
+    ) {
+
+
+        if (
+
+            isNaN(seconds)
+
+        ) {
+
+
+            return "0:00";
+
+
+        }
+
+
+        const minutes =
+
+            Math.floor(
+
+                seconds / 60
+
+            );
+
+
+        const remainingSeconds =
+
+            Math.floor(
+
+                seconds % 60
+
+            );
+
+
+        return `${minutes}:${String(
+
+            remainingSeconds
+
+        ).padStart(
+
+            2,
+
+            "0"
+
+        )}`;
+
+
+    }
+
 
 }
 
