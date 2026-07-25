@@ -1,2129 +1,600 @@
-/**
- * Video Wall Player v2
- * Custom HTML5 Video Web Component
- *
- * GitHub:
- * https://github.com/attendance1978-wq/v1
- *
- * Usage:
- *
- * <video-wall-player
- *     src="video.mp4">
- * </video-wall-player>
- */
-
 class VideoWallPlayer extends HTMLElement {
-
     constructor() {
-
         super();
-
-        this.attachShadow({
-            mode: "open"
-        });
-
+        this.attachShadow({ mode: "open" });
         this.shadowRoot.innerHTML = `
-
         <style>
-
             :host {
-
                 display: block;
-
                 width: 100%;
-
                 height: 100%;
-
                 min-height: 200px;
-
-                font-family: Arial, sans-serif;
-
             }
-
-
-            * {
-
-                box-sizing: border-box;
-
-            }
-
 
             .player {
-
                 position: relative;
-
                 width: 100%;
-
                 height: 100%;
-
                 min-height: 200px;
-
                 overflow: hidden;
-
-                background: white;
-
+                background: #000;
                 border-radius: 5px;
-
-                user-select: none;
-
             }
-
 
             video {
-
                 display: block;
-
                 width: 100%;
-
-                height: calc(100% - 38px);
-
-                background: white;
-
+                height: 100%;
                 object-fit: contain;
-
+                background: #000;
             }
-
-
-            /* =========================
-               VIDEO WALL BRAND
-            ========================= */
-
-            .brand-logo {
-
-                position: absolute;
-
-                top: 12px;
-
-                left: 12px;
-
-                z-index: 4;
-
-                display: flex;
-
-                align-items: center;
-
-                gap: 6px;
-
-                padding: 5px 8px;
-
-                color: #333;
-
-                background: rgba(255, 255, 255, 0.82);
-
-                border-radius: 4px;
-
-                font-size: 10px;
-
-                font-weight: bold;
-
-                pointer-events: none;
-
-            }
-
-
-            .brand-icon {
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                width: 18px;
-
-                height: 18px;
-
-                border-radius: 50%;
-
-                background: #111;
-
-                color: white;
-
-                font-size: 8px;
-
-            }
-
-
-            .brand-text {
-
-                letter-spacing: 1px;
-
-            }
-
 
             /* =========================
                PROGRESS BAR
             ========================= */
-
             .progress {
-
                 position: absolute;
-
-                top: 0;
-
+                bottom: 38px;
                 left: 0;
-
-                z-index: 10;
-
+                z-index: 5;
                 width: 100%;
-
                 height: 5px;
-
-                background: #c7aaaa;
-
+                background: rgba(255, 255, 255, 0.3);
                 cursor: pointer;
-
+                transition: height 0.2s;
             }
 
+            .progress:hover {
+                height: 8px;
+            }
 
             .progress-value {
-
                 width: 0%;
-
                 height: 100%;
-
-                background: red;
-
+                background: #ff0000;
+                transition: width 0.1s;
             }
-
 
             /* =========================
-               CONTROLS
+               CONTROL BAR
             ========================= */
-
             .controls {
-
                 position: absolute;
-
-                left: 0;
-
                 bottom: 0;
-
-                z-index: 10;
-
+                left: 0;
                 width: 100%;
-
                 height: 38px;
-
-                background: #9d8c8c;
-
+                background: rgba(0, 0, 0, 0.8);
                 display: flex;
-
                 align-items: center;
-
-                justify-content: center;
-
-                transition: opacity 0.25s ease;
-
+                justify-content: space-between;
+                padding: 0 10px;
+                box-sizing: border-box;
+                opacity: 1;
+                transition: opacity 0.3s;
             }
 
+            .player:hover .controls {
+                opacity: 1;
+            }
 
-            .player.hide-controls
-
-            .controls {
-
+            .controls.hidden {
                 opacity: 0;
-
                 pointer-events: none;
-
             }
-
 
             .control-center {
-
                 display: flex;
-
                 align-items: center;
-
-                gap: 4px;
-
+                gap: 8px;
             }
-
 
             .time {
-
                 color: white;
-
-                font-size: 7px;
-
+                font-size: 12px;
+                font-family: Arial, sans-serif;
                 user-select: none;
-
+                min-width: 30px;
+                text-align: center;
             }
 
+            .time-display {
+                color: white;
+                font-size: 12px;
+                font-family: Arial, sans-serif;
+                user-select: none;
+                min-width: 80px;
+                text-align: center;
+            }
 
+            /* =========================
+               ROUND BUTTONS
+            ========================= */
             button {
-
                 border: none;
-
                 cursor: pointer;
-
                 display: flex;
-
                 align-items: center;
-
                 justify-content: center;
-
+                background: transparent;
+                color: white;
+                font-size: 16px;
+                padding: 0;
+                transition: all 0.2s;
             }
 
+            button:hover {
+                transform: scale(1.1);
+                color: #ff0000;
+            }
+
+            button:active {
+                transform: scale(0.9);
+            }
 
             .circle-button {
-
-                width: 27px;
-
-                height: 27px;
-
-                padding: 0;
-
+                width: 32px;
+                height: 32px;
                 border-radius: 50%;
-
-                background: #eeeeee;
-
-                color: #111;
-
-                font-size: 15px;
-
+                background: rgba(255, 255, 255, 0.1);
+                font-size: 14px;
             }
-
 
             .circle-button:hover {
-
-                background: white;
-
+                background: rgba(255, 255, 255, 0.2);
             }
 
-
-            .circle-button:active {
-
-                transform: scale(0.9);
-
-            }
-
-
+            /* =========================
+               RIGHT CONTROLS
+            ========================= */
             .side-controls {
-
-                position: absolute;
-
-                right: 8px;
-
                 display: flex;
-
                 align-items: center;
-
-                gap: 3px;
-
+                gap: 8px;
             }
-
 
             .icon-button {
-
-                width: 23px;
-
-                height: 28px;
-
-                padding: 0;
-
-                background: transparent;
-
-                color: #000;
-
-                font-size: 18px;
-
+                font-size: 20px;
+                padding: 4px;
             }
-
-
-            .icon-button:hover {
-
-                transform: scale(1.1);
-
-            }
-
 
             /* =========================
-               GITHUB LOGO
+               VOLUME SLIDER
             ========================= */
-
-            .github-logo {
-
-                width: 23px;
-
-                height: 28px;
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                color: #000;
-
-                text-decoration: none;
-
-                cursor: pointer;
-
-            }
-
-
-            .github-logo svg {
-
-                width: 18px;
-
-                height: 18px;
-
-                fill: currentColor;
-
-                transition:
-
-                    transform 0.2s ease,
-
-                    opacity 0.2s ease;
-
-            }
-
-
-            .github-logo:hover svg {
-
-                transform: scale(1.2);
-
-                opacity: 0.7;
-
-            }
-
-
-            /* =========================
-               VOLUME
-            ========================= */
-
-            .volume {
-
+            .volume-slider {
                 width: 60px;
+                height: 4px;
+                -webkit-appearance: none;
+                appearance: none;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+                outline: none;
+                transition: all 0.2s;
+            }
 
-                height: 3px;
-
+            .volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #ff0000;
                 cursor: pointer;
-
-                accent-color: black;
-
             }
 
-
-            /* =========================
-               SPEED MENU
-            ========================= */
-
-            .speed-menu {
-
-                position: absolute;
-
-                right: 8px;
-
-                bottom: 45px;
-
-                z-index: 30;
-
-                display: none;
-
-                padding: 5px;
-
-                background: white;
-
-                border: 1px solid #777;
-
+            .volume-slider::-moz-range-thumb {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #ff0000;
+                cursor: pointer;
+                border: none;
             }
 
-
-            .speed-menu.show {
-
-                display: block;
-
+            .volume-slider:hover {
+                height: 6px;
             }
-
-
-            .speed-menu button {
-
-                display: block;
-
-                width: 55px;
-
-                padding: 5px;
-
-                background: white;
-
-                font-size: 11px;
-
-            }
-
-
-            .speed-menu button:hover {
-
-                background: #ddd;
-
-            }
-
 
             /* =========================
                FULLSCREEN OVERLAY
             ========================= */
-
             .fullscreen-overlay {
-
                 position: absolute;
-
                 inset: 0;
-
                 z-index: 20;
-
                 display: none;
-
                 align-items: center;
-
                 justify-content: center;
-
-                background: white;
-
+                background: rgba(0, 0, 0, 0.8);
+                flex-direction: column;
+                gap: 20px;
             }
-
 
             .fullscreen-overlay.show {
-
                 display: flex;
-
             }
-
 
             .overlay-fullscreen {
-
-                width: 27px;
-
-                height: 27px;
-
-                background: white;
-
-                border: 1px solid black;
-
-                font-size: 18px;
-
+                width: 60px;
+                height: 60px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 2px solid white;
+                border-radius: 50%;
+                font-size: 30px;
+                color: white;
+                transition: all 0.3s;
             }
 
+            .overlay-fullscreen:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.1);
+            }
 
             .fullscreen-label {
-
-                margin-left: 95px;
-
-                color: #111;
-
-                font-size: 20px;
-
+                font-size: 16px;
+                color: white;
+                font-family: Arial, sans-serif;
+                letter-spacing: 2px;
             }
 
-
-            /* =========================
-               CENTER PLAY BUTTON
-            ========================= */
-
-            .center-play {
-
+            /* Loading state */
+            .loading {
                 position: absolute;
-
                 top: 50%;
-
                 left: 50%;
-
-                z-index: 5;
-
-                width: 55px;
-
-                height: 55px;
-
-                border-radius: 50%;
-
-                background: rgba(255, 255, 255, 0.85);
-
-                font-size: 25px;
-
                 transform: translate(-50%, -50%);
-
-                opacity: 0;
-
-                pointer-events: none;
-
-                transition: opacity 0.2s;
-
+                color: white;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                z-index: 1;
             }
 
-
-            .player.paused
-
-            .center-play {
-
-                opacity: 1;
-
-                pointer-events: auto;
-
+            .loading.hidden {
+                display: none;
             }
-
-
         </style>
 
-
         <div class="player">
+            <!-- LOADING -->
+            <div class="loading">Loading...</div>
 
-
-            <!-- PROGRESS BAR -->
-
+            <!-- PROGRESS -->
             <div class="progress">
-
                 <div class="progress-value"></div>
-
             </div>
-
 
             <!-- VIDEO -->
-
             <video></video>
 
-
-            <!-- BRAND LOGO -->
-
-            <div class="brand-logo">
-
-                <span class="brand-icon">
-
-                    ▶
-
-                </span>
-
-
-                <span class="brand-text">
-
-                    VIDEO WALL
-
-                </span>
-
-            </div>
-
-
-            <!-- CENTER PLAY -->
-
-            <button class="center-play">
-
-                ▶
-
-            </button>
-
-
             <!-- FULLSCREEN OVERLAY -->
-
             <div class="fullscreen-overlay">
-
-
-                <button class="overlay-fullscreen">
-
+                <button class="overlay-fullscreen" aria-label="Fullscreen">
                     ⛶
-
                 </button>
-
-
-                <span class="fullscreen-label">
-
-                    FULLSCREEN
-
-                </span>
-
-
+                <span class="fullscreen-label">FULLSCREEN</span>
             </div>
-
-
-            <!-- SPEED MENU -->
-
-            <div class="speed-menu">
-
-
-                <button data-speed="0.5">
-
-                    0.5x
-
-                </button>
-
-
-                <button data-speed="1">
-
-                    1x
-
-                </button>
-
-
-                <button data-speed="1.25">
-
-                    1.25x
-
-                </button>
-
-
-                <button data-speed="1.5">
-
-                    1.5x
-
-                </button>
-
-
-                <button data-speed="2">
-
-                    2x
-
-                </button>
-
-
-            </div>
-
 
             <!-- CONTROLS -->
-
             <div class="controls">
-
-
                 <div class="control-center">
-
-
-                    <span class="time current-time">
-
-                        0:00
-
-                    </span>
-
-
-                    <button
-
-                        class="circle-button backward"
-
-                        title="Back 10 seconds">
-
-                        ◀
-
+                    <span class="time time-current">0:00</span>
+                    
+                    <button class="circle-button backward" title="Back 10 seconds">
+                        ◀◀
                     </button>
 
-
-                    <button
-
-                        class="circle-button play"
-
-                        title="Play">
-
+                    <button class="circle-button play" title="Play">
                         ▶
-
                     </button>
 
-
-                    <button
-
-                        class="circle-button forward"
-
-                        title="Forward 10 seconds">
-
-                        ▶
-
+                    <button class="circle-button forward" title="Forward 10 seconds">
+                        ▶▶
                     </button>
 
-
-                    <span class="time duration">
-
-                        0:00
-
-                    </span>
-
-
+                    <span class="time time-duration">0:00</span>
                 </div>
-
 
                 <div class="side-controls">
-
-
-                    <!-- VOLUME -->
-
-                    <input
-
-                        class="volume"
-
-                        type="range"
-
-                        min="0"
-
-                        max="1"
-
-                        step="0.01"
-
-                        value="1">
-
-
-                    <!-- MUTE -->
-
-                    <button
-
-                        class="icon-button mute"
-
-                        title="Mute">
-
+                    <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                    
+                    <button class="icon-button mute" title="Mute">
                         🔊
-
                     </button>
 
-
-                    <!-- SPEED -->
-
-                    <button
-
-                        class="icon-button speed"
-
-                        title="Playback speed">
-
-                        ⚙
-
-                    </button>
-
-
-                    <!-- PICTURE IN PICTURE -->
-
-                    <button
-
-                        class="icon-button pip"
-
-                        title="Picture in Picture">
-
-                        ▣
-
-                    </button>
-
-
-                    <!-- GITHUB -->
-
-                    <a
-
-                        class="github-logo"
-
-                        href="https://github.com/attendance1978-wq/v1"
-
-                        target="_blank"
-
-                        rel="noopener noreferrer"
-
-                        title="View Video Wall on GitHub">
-
-
-                        <svg
-
-                            viewBox="0 0 24 24"
-
-                            aria-hidden="true">
-
-
-                            <path
-
-                                d="M12 .5C5.65.5.5 5.65.5 12c0 5.08
-
-                                3.29 9.39 7.86 10.91.57.1.78-.25.78-.55
-
-                                0-.27-.01-1-.01-1.96-3.2.7-3.88-1.54
-
-                                -3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69
-
-                                -1.05-.72.08-.71.08-.71 1.16.08 1.77
-
-                                1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36
-
-                                .96.1-.75.4-1.26.73-1.55-2.56-.29-5.26
-
-                                -1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1
-
-                                -.12-.29-.52-1.47.11-3.06 0 0 .97-.31
-
-                                3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49
-
-                                3.17-1.18 3.17-1.18.63 1.59.23 2.77.11
-
-                                3.06.74.81 1.19 1.84 1.19 3.1 0 4.43
-
-                                -2.7 5.41-5.27 5.69.41.36.78 1.08.78 2.18
-
-                                0 1.57-.01 2.83-.01 3.21 0 .3.21.66.79.55
-
-                                A11.51 11.51 0 0 0 23.5 12C23.5 5.65
-
-                                18.35.5 12 .5Z">
-
-                            </path>
-
-
-                        </svg>
-
-
-                    </a>
-
-
-                    <!-- FULLSCREEN -->
-
-                    <button
-
-                        class="icon-button fullscreen"
-
-                        title="Fullscreen">
-
+                    <button class="icon-button fullscreen" title="Fullscreen">
                         ⛶
-
                     </button>
-
-
                 </div>
-
-
             </div>
-
-
         </div>
-
         `;
 
+        // Get elements
+        this.video = this.shadowRoot.querySelector("video");
+        this.controls = this.shadowRoot.querySelector(".controls");
+        this.progress = this.shadowRoot.querySelector(".progress");
+        this.progressValue = this.shadowRoot.querySelector(".progress-value");
+        this.playButton = this.shadowRoot.querySelector(".play");
+        this.backwardButton = this.shadowRoot.querySelector(".backward");
+        this.forwardButton = this.shadowRoot.querySelector(".forward");
+        this.fullscreenButton = this.shadowRoot.querySelector(".fullscreen");
+        this.overlayFullscreenButton = this.shadowRoot.querySelector(".overlay-fullscreen");
+        this.muteButton = this.shadowRoot.querySelector(".mute");
+        this.volumeSlider = this.shadowRoot.querySelector(".volume-slider");
+        this.timeCurrent = this.shadowRoot.querySelector(".time-current");
+        this.timeDuration = this.shadowRoot.querySelector(".time-duration");
+        this.fullscreenOverlay = this.shadowRoot.querySelector(".fullscreen-overlay");
+        this.loading = this.shadowRoot.querySelector(".loading");
 
-        /*
-        =========================
-        ELEMENTS
-        =========================
-        */
-
-        this.video =
-
-            this.shadowRoot.querySelector(
-
-                "video"
-
-            );
-
-
-        this.player =
-
-            this.shadowRoot.querySelector(
-
-                ".player"
-
-            );
-
-
-        this.playButton =
-
-            this.shadowRoot.querySelector(
-
-                ".play"
-
-            );
-
-
-        this.centerPlay =
-
-            this.shadowRoot.querySelector(
-
-                ".center-play"
-
-            );
-
-
-        this.progress =
-
-            this.shadowRoot.querySelector(
-
-                ".progress"
-
-            );
-
-
-        this.progressValue =
-
-            this.shadowRoot.querySelector(
-
-                ".progress-value"
-
-            );
-
-
-        this.currentTimeElement =
-
-            this.shadowRoot.querySelector(
-
-                ".current-time"
-
-            );
-
-
-        this.durationElement =
-
-            this.shadowRoot.querySelector(
-
-                ".duration"
-
-            );
-
-
-        this.video.src =
-
-            this.getAttribute(
-
-                "src"
-
-            ) || "";
-
-
-        this.video.controls = false;
+        // Set video source
+        const src = this.getAttribute("src");
+        if (src) {
+            this.video.src = src;
+        }
 
         this.video.preload = "metadata";
-
         this.video.playsInline = true;
+        this.video.controls = false;
 
-
-        this.setupAttributes();
-
-        this.setupEvents();
-
-
-        this.player.classList.add(
-
-            "paused"
-
-        );
-
-
+        // Initialize
+        this.setupControls();
+        this.setupKeyboardShortcuts();
+        this.autoHideControls();
     }
 
+    setupControls() {
+        // Play/Pause
+        this.playButton.addEventListener("click", async () => {
+            if (this.video.paused || this.video.ended) {
+                try {
+                    await this.video.play();
+                } catch (error) {
+                    console.error("Video play error:", error);
+                }
+            } else {
+                this.video.pause();
+            }
+        });
 
-    /*
-    =========================
-    ATTRIBUTES
-    =========================
-    */
+        // Video events
+        this.video.addEventListener("play", () => {
+            this.playButton.textContent = "⏸";
+            this.playButton.title = "Pause";
+        });
 
-    setupAttributes() {
+        this.video.addEventListener("pause", () => {
+            this.playButton.textContent = "▶";
+            this.playButton.title = "Play";
+        });
 
+        this.video.addEventListener("ended", () => {
+            this.playButton.textContent = "▶";
+            this.playButton.title = "Play";
+        });
 
-        if (
+        this.video.addEventListener("loadedmetadata", () => {
+            this.updateTimeDisplay();
+            this.loading.classList.add("hidden");
+        });
 
-            this.hasAttribute(
+        this.video.addEventListener("waiting", () => {
+            this.loading.classList.remove("hidden");
+        });
 
-                "loop"
+        this.video.addEventListener("canplay", () => {
+            this.loading.classList.add("hidden");
+        });
 
-            )
+        // Backward/Forward
+        this.backwardButton.addEventListener("click", () => {
+            this.video.currentTime = Math.max(0, this.video.currentTime - 10);
+        });
 
-        ) {
+        this.forwardButton.addEventListener("click", () => {
+            this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + 10);
+        });
 
+        // Mute/Unmute
+        this.muteButton.addEventListener("click", () => {
+            this.video.muted = !this.video.muted;
+            this.updateMuteButton();
+        });
 
-            this.video.loop = true;
+        // Volume slider
+        this.volumeSlider.addEventListener("input", () => {
+            this.video.volume = parseFloat(this.volumeSlider.value);
+            if (this.video.volume > 0) {
+                this.video.muted = false;
+                this.updateMuteButton();
+            }
+        });
 
+        this.video.addEventListener("volumechange", () => {
+            this.volumeSlider.value = this.video.muted ? 0 : this.video.volume;
+            this.updateMuteButton();
+        });
 
-        }
+        // Fullscreen
+        this.fullscreenButton.addEventListener("click", () => {
+            this.toggleFullscreen();
+        });
 
+        this.overlayFullscreenButton.addEventListener("click", () => {
+            this.toggleFullscreen();
+        });
 
-        if (
+        // Progress update
+        this.video.addEventListener("timeupdate", () => {
+            if (!this.video.duration || isNaN(this.video.duration)) return;
+            
+            const percentage = (this.video.currentTime / this.video.duration) * 100;
+            this.progressValue.style.width = `${percentage}%`;
+            this.updateTimeDisplay();
+        });
 
-            this.hasAttribute(
+        // Click progress to seek
+        this.progress.addEventListener("click", (event) => {
+            if (!this.video.duration) return;
+            
+            const rect = this.progress.getBoundingClientRect();
+            const percentage = (event.clientX - rect.left) / rect.width;
+            this.video.currentTime = percentage * this.video.duration;
+        });
 
-                "muted"
+        // Double click video
+        this.video.addEventListener("dblclick", () => {
+            this.toggleFullscreen();
+        });
 
-            )
+        // Click video to play/pause
+        this.video.addEventListener("click", () => {
+            this.playButton.click();
+        });
 
-        ) {
-
-
-            this.video.muted = true;
-
-
-        }
-
-
-        if (
-
-            this.hasAttribute(
-
-                "autoplay"
-
-            )
-
-            &&
-
-            this.getAttribute(
-
-                "autoplay"
-
-            ) !== "false"
-
-        ) {
-
-
-            this.video.autoplay = true;
-
-
-        }
-
-
+        // Show/hide overlay
+        this.video.addEventListener("enterpictureinpicture", () => {
+            this.fullscreenOverlay.classList.remove("show");
+        });
     }
 
+    setupKeyboardShortcuts() {
+        document.addEventListener("keydown", (e) => {
+            // Only if this component is visible
+            if (!this.isConnected) return;
+            
+            // Check if we're in this component
+            const activeElement = document.activeElement;
+            if (activeElement && this.contains(activeElement)) return;
 
-    /*
-    =========================
-    EVENTS
-    =========================
-    */
-
-    setupEvents() {
-
-
-        const root =
-
-            this.shadowRoot;
-
-
-        const backward =
-
-            root.querySelector(
-
-                ".backward"
-
-            );
-
-
-        const forward =
-
-            root.querySelector(
-
-                ".forward"
-
-            );
-
-
-        const mute =
-
-            root.querySelector(
-
-                ".mute"
-
-            );
-
-
-        const volume =
-
-            root.querySelector(
-
-                ".volume"
-
-            );
-
-
-        const fullscreen =
-
-            root.querySelector(
-
-                ".fullscreen"
-
-            );
-
-
-        const overlayFullscreen =
-
-            root.querySelector(
-
-                ".overlay-fullscreen"
-
-            );
-
-
-        const pip =
-
-            root.querySelector(
-
-                ".pip"
-
-            );
-
-
-        const speed =
-
-            root.querySelector(
-
-                ".speed"
-
-            );
-
-
-        const speedMenu =
-
-            root.querySelector(
-
-                ".speed-menu"
-
-            );
-
-
-        /*
-        =========================
-        PLAY / PAUSE
-        =========================
-        */
-
-        this.playButton.addEventListener(
-
-            "click",
-
-            () => {
-
-                this.togglePlay();
-
+            switch(e.key.toLowerCase()) {
+                case " ":
+                    e.preventDefault();
+                    this.playButton.click();
+                    break;
+                case "f":
+                    this.toggleFullscreen();
+                    break;
+                case "m":
+                    this.muteButton.click();
+                    break;
+                case "arrowright":
+                    e.preventDefault();
+                    this.forwardButton.click();
+                    break;
+                case "arrowleft":
+                    e.preventDefault();
+                    this.backwardButton.click();
+                    break;
             }
-
-        );
-
-
-        this.centerPlay.addEventListener(
-
-            "click",
-
-            () => {
-
-                this.togglePlay();
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        VIDEO PLAY
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "play",
-
-            () => {
-
-
-                this.playButton.textContent =
-
-                    "Ⅱ";
-
-
-                this.playButton.title =
-
-                    "Pause";
-
-
-                this.centerPlay.textContent =
-
-                    "Ⅱ";
-
-
-                this.player.classList.remove(
-
-                    "paused"
-
-                );
-
-
-                this.dispatchEvent(
-
-                    new CustomEvent(
-
-                        "video-play"
-
-                    )
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        VIDEO PAUSE
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "pause",
-
-            () => {
-
-
-                this.playButton.textContent =
-
-                    "▶";
-
-
-                this.playButton.title =
-
-                    "Play";
-
-
-                this.centerPlay.textContent =
-
-                    "▶";
-
-
-                this.player.classList.add(
-
-                    "paused"
-
-                );
-
-
-                this.dispatchEvent(
-
-                    new CustomEvent(
-
-                        "video-pause"
-
-                    )
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        VIDEO ENDED
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "ended",
-
-            () => {
-
-
-                this.playButton.textContent =
-
-                    "▶";
-
-
-                this.playButton.title =
-
-                    "Play";
-
-
-                this.centerPlay.textContent =
-
-                    "▶";
-
-
-                this.player.classList.add(
-
-                    "paused"
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        BACKWARD 10 SECONDS
-        =========================
-        */
-
-        backward.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                this.video.currentTime =
-
-                    Math.max(
-
-                        0,
-
-                        this.video.currentTime - 10
-
-                    );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        FORWARD 10 SECONDS
-        =========================
-        */
-
-        forward.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                this.video.currentTime += 10;
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        VOLUME
-        =========================
-        */
-
-        volume.addEventListener(
-
-            "input",
-
-            () => {
-
-
-                this.video.volume =
-
-                    Number(
-
-                        volume.value
-
-                    );
-
-
-                this.video.muted =
-
-                    Number(
-
-                        volume.value
-
-                    ) === 0;
-
-
-                this.updateMuteIcon(
-
-                    mute
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        MUTE
-        =========================
-        */
-
-        mute.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                this.video.muted =
-
-                    !this.video.muted;
-
-
-                this.updateMuteIcon(
-
-                    mute
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        FULLSCREEN
-        =========================
-        */
-
-        fullscreen.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                this.toggleFullscreen();
-
-
-            }
-
-        );
-
-
-        overlayFullscreen.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                this.toggleFullscreen();
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        PICTURE IN PICTURE
-        =========================
-        */
-
-        pip.addEventListener(
-
-            "click",
-
-            async () => {
-
-
-                if (
-
-                    !document.pictureInPictureElement
-
-                ) {
-
-
-                    try {
-
-
-                        await this.video
-
-                            .requestPictureInPicture();
-
-
-                    }
-
-                    catch (error) {
-
-
-                        console.error(
-
-                            "PiP error:",
-
-                            error
-
-                        );
-
-
-                    }
-
-
-                }
-
-                else {
-
-
-                    await document
-
-                        .exitPictureInPicture();
-
-
-                }
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        SPEED MENU
-        =========================
-        */
-
-        speed.addEventListener(
-
-            "click",
-
-            () => {
-
-
-                speedMenu.classList.toggle(
-
-                    "show"
-
-                );
-
-
-            }
-
-        );
-
-
-        root.querySelectorAll(
-
-            "[data-speed]"
-
-        ).forEach(
-
-            button => {
-
-
-                button.addEventListener(
-
-                    "click",
-
-                    () => {
-
-
-                        this.video.playbackRate =
-
-                            Number(
-
-                                button.dataset.speed
-
-                            );
-
-
-                        speedMenu.classList.remove(
-
-                            "show"
-
-                        );
-
-
-                    }
-
-                );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        PROGRESS UPDATE
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "timeupdate",
-
-            () => {
-
-
-                if (
-
-                    !this.video.duration
-
-                ) {
-
-
-                    return;
-
-
-                }
-
-
-                const percentage =
-
-                    (
-
-                        this.video.currentTime /
-
-                        this.video.duration
-
-                    ) * 100;
-
-
-                this.progressValue.style.width =
-
-                    `${percentage}%`;
-
-
-                this.currentTimeElement.textContent =
-
-                    this.formatTime(
-
-                        this.video.currentTime
-
-                    );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        VIDEO METADATA
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "loadedmetadata",
-
-            () => {
-
-
-                this.durationElement.textContent =
-
-                    this.formatTime(
-
-                        this.video.duration
-
-                    );
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        SEEK
-        =========================
-        */
-
-        this.progress.addEventListener(
-
-            "click",
-
-            event => {
-
-
-                if (
-
-                    !this.video.duration
-
-                ) {
-
-
-                    return;
-
-
-                }
-
-
-                const rect =
-
-                    this.progress
-
-                        .getBoundingClientRect();
-
-
-                const percentage =
-
-                    (
-
-                        event.clientX -
-
-                        rect.left
-
-                    ) / rect.width;
-
-
-                this.video.currentTime =
-
-                    percentage *
-
-                    this.video.duration;
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        DOUBLE CLICK FULLSCREEN
-        =========================
-        */
-
-        this.video.addEventListener(
-
-            "dblclick",
-
-            () => {
-
-
-                this.toggleFullscreen();
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        KEYBOARD CONTROLS
-        =========================
-        */
-
-        this.player.tabIndex = 0;
-
-
-        this.player.addEventListener(
-
-            "keydown",
-
-            event => {
-
-
-                switch (
-
-                    event.key
-
-                ) {
-
-
-                    case " ":
-
-                        event.preventDefault();
-
-                        this.togglePlay();
-
-                        break;
-
-
-                    case "ArrowLeft":
-
-                        this.video.currentTime -= 10;
-
-                        break;
-
-
-                    case "ArrowRight":
-
-                        this.video.currentTime += 10;
-
-                        break;
-
-
-                    case "m":
-
-                    case "M":
-
-                        this.video.muted =
-
-                            !this.video.muted;
-
-
-                        this.updateMuteIcon(
-
-                            mute
-
-                        );
-
-
-                        break;
-
-
-                    case "f":
-
-                    case "F":
-
-                        this.toggleFullscreen();
-
-                        break;
-
-
-                }
-
-
-            }
-
-        );
-
-
-        /*
-        =========================
-        AUTO HIDE CONTROLS
-        =========================
-        */
-
-        let hideTimer;
-
-
-        this.player.addEventListener(
-
-            "mousemove",
-
-            () => {
-
-
-                this.player.classList.remove(
-
-                    "hide-controls"
-
-                );
-
-
-                clearTimeout(
-
-                    hideTimer
-
-                );
-
-
-                hideTimer = setTimeout(
-
-                    () => {
-
-
-                        if (
-
-                            !this.video.paused
-
-                        ) {
-
-
-                            this.player.classList.add(
-
-                                "hide-controls"
-
-                            );
-
-
-                        }
-
-
-                    },
-
-                    3000
-
-                );
-
-
-            }
-
-        );
-
-
+        });
     }
 
+    autoHideControls() {
+        let timeout;
+        const controls = this.controls;
+        
+        this.video.addEventListener("mouseenter", () => {
+            controls.classList.remove("hidden");
+            clearTimeout(timeout);
+        });
 
-    /*
-    =========================
-    PLAY / PAUSE
-    =========================
-    */
-
-    async togglePlay() {
-
-
-        if (
-
-            this.video.paused ||
-
-            this.video.ended
-
-        ) {
-
-
-            try {
-
-
-                if (
-
-                    this.video.ended
-
-                ) {
-
-
-                    this.video.currentTime = 0;
-
-
-                }
-
-
-                await this.video.play();
-
-
+        this.video.addEventListener("mouseleave", () => {
+            if (!this.video.paused) {
+                timeout = setTimeout(() => {
+                    controls.classList.add("hidden");
+                }, 3000);
             }
+        });
 
-            catch (error) {
+        this.video.addEventListener("play", () => {
+            timeout = setTimeout(() => {
+                controls.classList.add("hidden");
+            }, 3000);
+        });
 
+        this.video.addEventListener("pause", () => {
+            controls.classList.remove("hidden");
+            clearTimeout(timeout);
+        });
 
-                console.error(
-
-                    "Unable to play video:",
-
-                    error
-
-                );
-
-
+        // Show controls on mouse move
+        this.shadowRoot.querySelector(".player").addEventListener("mousemove", () => {
+            controls.classList.remove("hidden");
+            clearTimeout(timeout);
+            
+            if (!this.video.paused) {
+                timeout = setTimeout(() => {
+                    controls.classList.add("hidden");
+                }, 3000);
             }
+        });
+    }
 
-
+    updateTimeDisplay() {
+        if (!this.video.duration) {
+            this.timeDuration.textContent = "0:00";
+            this.timeCurrent.textContent = "0:00";
+            return;
         }
 
-        else {
+        const formatTime = (seconds) => {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        };
 
+        this.timeCurrent.textContent = formatTime(this.video.currentTime);
+        this.timeDuration.textContent = formatTime(this.video.duration);
+    }
 
-            this.video.pause();
-
-
+    updateMuteButton() {
+        if (this.video.muted || this.video.volume === 0) {
+            this.muteButton.textContent = "🔇";
+            this.muteButton.title = "Unmute";
+            this.volumeSlider.value = 0;
+        } else {
+            this.muteButton.textContent = "🔊";
+            this.muteButton.title = "Mute";
+            this.volumeSlider.value = this.video.volume;
         }
-
-
     }
-
-
-    /*
-    =========================
-    MUTE ICON
-    =========================
-    */
-
-    updateMuteIcon(
-
-        button
-
-    ) {
-
-
-        button.textContent =
-
-            this.video.muted ||
-
-            this.video.volume === 0
-
-                ? "🔇"
-
-                : "🔊";
-
-
-    }
-
-
-    /*
-    =========================
-    FULLSCREEN
-    =========================
-    */
 
     toggleFullscreen() {
-
-
-        if (
-
-            !document.fullscreenElement
-
-        ) {
-
-
-            this.player.requestFullscreen();
-
-
+        const player = this.shadowRoot.querySelector(".player");
+        
+        if (!document.fullscreenElement) {
+            if (player.requestFullscreen) {
+                player.requestFullscreen().catch(err => {
+                    console.error("Fullscreen error:", err);
+                });
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
         }
-
-        else {
-
-
-            document.exitFullscreen();
-
-
-        }
-
-
     }
 
-
-    /*
-    =========================
-    FORMAT TIME
-    =========================
-    */
-
-    formatTime(
-
-        seconds
-
-    ) {
-
-
-        if (
-
-            isNaN(seconds)
-
-        ) {
-
-
-            return "0:00";
-
-
-        }
-
-
-        const minutes =
-
-            Math.floor(
-
-                seconds / 60
-
-            );
-
-
-        const remainingSeconds =
-
-            Math.floor(
-
-                seconds % 60
-
-            );
-
-
-        return `${minutes}:${String(
-
-            remainingSeconds
-
-        ).padStart(
-
-            2,
-
-            "0"
-
-        )}`;
-
-
+    // Attribute changed
+    static get observedAttributes() {
+        return ["src"];
     }
 
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "src" && newValue !== oldValue) {
+            this.video.src = newValue;
+            this.video.load();
+            this.loading.classList.remove("hidden");
+        }
+    }
 
+    // Clean up
+    disconnectedCallback() {
+        this.video.pause();
+        this.video.src = "";
+        this.video.load();
+    }
 }
 
-
-customElements.define(
-
-    "video-wall-player",
-
-    VideoWallPlayer
-
-);
+customElements.define("video-wall-player", VideoWallPlayer);
