@@ -1,14 +1,17 @@
-class VideoWallPlayer extends HTMLElement {
+class videowallplayer extends HTMLElement {
+
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
+        this.attachShadow({
+            mode: "open"
+        });
+
         this.shadowRoot.innerHTML = `
         <style>
             :host {
                 display: block;
                 width: 100%;
                 height: 100%;
-                min-height: 200px;
             }
 
             .player {
@@ -17,16 +20,16 @@ class VideoWallPlayer extends HTMLElement {
                 height: 100%;
                 min-height: 200px;
                 overflow: hidden;
-                background: #000;
+                background: white;
                 border-radius: 5px;
             }
 
             video {
                 display: block;
                 width: 100%;
-                height: 100%;
+                height: calc(100% - 38px);
                 object-fit: contain;
-                background: #000;
+                background: white;
             }
 
             /* =========================
@@ -34,25 +37,19 @@ class VideoWallPlayer extends HTMLElement {
             ========================= */
             .progress {
                 position: absolute;
-                bottom: 38px;
+                top: 0;
                 left: 0;
                 z-index: 5;
                 width: 100%;
                 height: 5px;
-                background: rgba(255, 255, 255, 0.3);
+                background: #c6aaaa;
                 cursor: pointer;
-                transition: height 0.2s;
-            }
-
-            .progress:hover {
-                height: 8px;
             }
 
             .progress-value {
                 width: 0%;
                 height: 100%;
-                background: #ff0000;
-                transition: width 0.1s;
+                background: red;
             }
 
             /* =========================
@@ -64,47 +61,24 @@ class VideoWallPlayer extends HTMLElement {
                 left: 0;
                 width: 100%;
                 height: 38px;
-                background: rgba(0, 0, 0, 0.8);
+                background: #9d8c8c;
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: space-between; /* Changed from center */
                 padding: 0 10px;
                 box-sizing: border-box;
-                opacity: 1;
-                transition: opacity 0.3s;
-            }
-
-            .player:hover .controls {
-                opacity: 1;
-            }
-
-            .controls.hidden {
-                opacity: 0;
-                pointer-events: none;
             }
 
             .control-center {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 4px;
             }
 
             .time {
                 color: white;
-                font-size: 12px;
-                font-family: Arial, sans-serif;
+                font-size: 10px; /* Increased from 7px */
                 user-select: none;
-                min-width: 30px;
-                text-align: center;
-            }
-
-            .time-display {
-                color: white;
-                font-size: 12px;
-                font-family: Arial, sans-serif;
-                user-select: none;
-                min-width: 80px;
-                text-align: center;
             }
 
             /* =========================
@@ -118,30 +92,26 @@ class VideoWallPlayer extends HTMLElement {
                 justify-content: center;
                 background: transparent;
                 color: white;
-                font-size: 16px;
+            }
+
+            .circle-button {
+                width: 27px;
+                height: 27px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                font-size: 15px;
                 padding: 0;
                 transition: all 0.2s;
             }
 
-            button:hover {
-                transform: scale(1.1);
-                color: #ff0000;
-            }
-
-            button:active {
-                transform: scale(0.9);
-            }
-
-            .circle-button {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.1);
-                font-size: 14px;
-            }
-
             .circle-button:hover {
-                background: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.4);
+                transform: scale(1.05);
+            }
+
+            .circle-button:active {
+                transform: scale(0.9);
             }
 
             /* =========================
@@ -150,49 +120,22 @@ class VideoWallPlayer extends HTMLElement {
             .side-controls {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 3px;
             }
 
             .icon-button {
-                font-size: 20px;
-                padding: 4px;
-            }
-
-            /* =========================
-               VOLUME SLIDER
-            ========================= */
-            .volume-slider {
-                width: 60px;
-                height: 4px;
-                -webkit-appearance: none;
-                appearance: none;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 2px;
-                outline: none;
+                width: 23px;
+                height: 28px;
+                padding: 0;
+                background: transparent;
+                color: white;
+                font-size: 19px;
                 transition: all 0.2s;
             }
 
-            .volume-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: #ff0000;
-                cursor: pointer;
-            }
-
-            .volume-slider::-moz-range-thumb {
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: #ff0000;
-                cursor: pointer;
-                border: none;
-            }
-
-            .volume-slider:hover {
-                height: 6px;
+            .icon-button:hover {
+                transform: scale(1.1);
+                opacity: 0.8;
             }
 
             /* =========================
@@ -217,47 +160,50 @@ class VideoWallPlayer extends HTMLElement {
             .overlay-fullscreen {
                 width: 60px;
                 height: 60px;
-                background: rgba(255, 255, 255, 0.1);
-                border: 2px solid white;
+                background: white;
+                border: none;
                 border-radius: 50%;
                 font-size: 30px;
-                color: white;
+                color: black;
+                cursor: pointer;
                 transition: all 0.3s;
             }
 
             .overlay-fullscreen:hover {
-                background: rgba(255, 255, 255, 0.2);
                 transform: scale(1.1);
+                background: #f0f0f0;
             }
 
             .fullscreen-label {
-                font-size: 16px;
+                font-size: 20px;
                 color: white;
-                font-family: Arial, sans-serif;
+                font-weight: 300;
                 letter-spacing: 2px;
             }
 
-            /* Loading state */
-            .loading {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: white;
-                font-family: Arial, sans-serif;
-                font-size: 14px;
-                z-index: 1;
+            /* =========================
+               HIDE CONTROLS ON IDLE
+            ========================= */
+            .controls.hidden {
+                opacity: 0;
+                transition: opacity 0.3s;
             }
 
-            .loading.hidden {
-                display: none;
+            .controls {
+                transition: opacity 0.3s;
+            }
+
+            .progress.hidden {
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .progress {
+                transition: opacity 0.3s;
             }
         </style>
 
         <div class="player">
-            <!-- LOADING -->
-            <div class="loading">Loading...</div>
-
             <!-- PROGRESS -->
             <div class="progress">
                 <div class="progress-value"></div>
@@ -268,7 +214,7 @@ class VideoWallPlayer extends HTMLElement {
 
             <!-- FULLSCREEN OVERLAY -->
             <div class="fullscreen-overlay">
-                <button class="overlay-fullscreen" aria-label="Fullscreen">
+                <button class="overlay-fullscreen">
                     ⛶
                 </button>
                 <span class="fullscreen-label">FULLSCREEN</span>
@@ -277,74 +223,55 @@ class VideoWallPlayer extends HTMLElement {
             <!-- CONTROLS -->
             <div class="controls">
                 <div class="control-center">
-                    <span class="time time-current">0:00</span>
-                    
-                    <button class="circle-button backward" title="Back 10 seconds">
-                        ◀◀
-                    </button>
-
-                    <button class="circle-button play" title="Play">
-                        ▶
-                    </button>
-
-                    <button class="circle-button forward" title="Forward 10 seconds">
-                        ▶▶
-                    </button>
-
-                    <span class="time time-duration">0:00</span>
+                    <span class="time">-10</span>
+                    <button class="circle-button backward" title="Back 10 seconds">◀</button>
+                    <button class="circle-button play" title="Play">▶</button>
+                    <button class="circle-button forward" title="Forward 10 seconds">▶</button>
+                    <span class="time">+10</span>
                 </div>
 
                 <div class="side-controls">
-                    <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="1">
-                    
-                    <button class="icon-button mute" title="Mute">
-                        🔊
-                    </button>
-
-                    <button class="icon-button fullscreen" title="Fullscreen">
-                        ⛶
-                    </button>
+                    <button class="icon-button fullscreen" title="Fullscreen">⛶</button>
+                    <button class="icon-button mute" title="Mute">🔊</button>
                 </div>
             </div>
         </div>
         `;
 
-        // Get elements
+        // GET VIDEO ELEMENT
         this.video = this.shadowRoot.querySelector("video");
-        this.controls = this.shadowRoot.querySelector(".controls");
-        this.progress = this.shadowRoot.querySelector(".progress");
-        this.progressValue = this.shadowRoot.querySelector(".progress-value");
-        this.playButton = this.shadowRoot.querySelector(".play");
-        this.backwardButton = this.shadowRoot.querySelector(".backward");
-        this.forwardButton = this.shadowRoot.querySelector(".forward");
-        this.fullscreenButton = this.shadowRoot.querySelector(".fullscreen");
-        this.overlayFullscreenButton = this.shadowRoot.querySelector(".overlay-fullscreen");
-        this.muteButton = this.shadowRoot.querySelector(".mute");
-        this.volumeSlider = this.shadowRoot.querySelector(".volume-slider");
-        this.timeCurrent = this.shadowRoot.querySelector(".time-current");
-        this.timeDuration = this.shadowRoot.querySelector(".time-duration");
-        this.fullscreenOverlay = this.shadowRoot.querySelector(".fullscreen-overlay");
-        this.loading = this.shadowRoot.querySelector(".loading");
-
-        // Set video source
-        const src = this.getAttribute("src");
-        if (src) {
-            this.video.src = src;
-        }
-
+        
+        // SET VIDEO SOURCE
+        this.video.src = this.getAttribute("src") || "";
         this.video.preload = "metadata";
         this.video.playsInline = true;
         this.video.controls = false;
 
-        // Initialize
+        // Initialize controls
         this.setupControls();
-        this.setupKeyboardShortcuts();
-        this.autoHideControls();
+        
+        // Auto-hide controls timer
+        this.controlsTimer = null;
     }
 
     setupControls() {
-        // Play/Pause
-        this.playButton.addEventListener("click", async () => {
+        const root = this.shadowRoot;
+        const playButton = root.querySelector(".play");
+        const backwardButton = root.querySelector(".backward");
+        const forwardButton = root.querySelector(".forward");
+        const fullscreenButton = root.querySelector(".fullscreen");
+        const overlayFullscreenButton = root.querySelector(".overlay-fullscreen");
+        const muteButton = root.querySelector(".mute");
+        const progress = root.querySelector(".progress");
+        const progressValue = root.querySelector(".progress-value");
+        const controls = root.querySelector(".controls");
+        const player = root.querySelector(".player");
+        const fullscreenOverlay = root.querySelector(".fullscreen-overlay");
+
+        // =========================
+        // PLAY / PAUSE
+        // =========================
+        playButton.addEventListener("click", async () => {
             if (this.video.paused || this.video.ended) {
                 try {
                     await this.video.play();
@@ -354,246 +281,192 @@ class VideoWallPlayer extends HTMLElement {
             } else {
                 this.video.pause();
             }
+            this.resetControlsTimer();
         });
 
-        // Video events
+        // =========================
+        // WHEN VIDEO PLAYS
+        // =========================
         this.video.addEventListener("play", () => {
-            this.playButton.textContent = "⏸";
-            this.playButton.title = "Pause";
+            playButton.textContent = "❚❚";
+            playButton.title = "Pause";
         });
 
+        // =========================
+        // WHEN VIDEO PAUSES
+        // =========================
         this.video.addEventListener("pause", () => {
-            this.playButton.textContent = "▶";
-            this.playButton.title = "Play";
+            playButton.textContent = "▶";
+            playButton.title = "Play";
         });
 
+        // =========================
+        // WHEN VIDEO ENDS
+        // =========================
         this.video.addEventListener("ended", () => {
-            this.playButton.textContent = "▶";
-            this.playButton.title = "Play";
+            playButton.textContent = "▶";
+            playButton.title = "Play";
         });
 
-        this.video.addEventListener("loadedmetadata", () => {
-            this.updateTimeDisplay();
-            this.loading.classList.add("hidden");
-        });
-
-        this.video.addEventListener("waiting", () => {
-            this.loading.classList.remove("hidden");
-        });
-
-        this.video.addEventListener("canplay", () => {
-            this.loading.classList.add("hidden");
-        });
-
-        // Backward/Forward
-        this.backwardButton.addEventListener("click", () => {
+        // =========================
+        // BACKWARD 10 SECONDS
+        // =========================
+        backwardButton.addEventListener("click", () => {
             this.video.currentTime = Math.max(0, this.video.currentTime - 10);
+            this.resetControlsTimer();
         });
 
-        this.forwardButton.addEventListener("click", () => {
+        // =========================
+        // FORWARD 10 SECONDS
+        // =========================
+        forwardButton.addEventListener("click", () => {
             this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + 10);
+            this.resetControlsTimer();
         });
 
-        // Mute/Unmute
-        this.muteButton.addEventListener("click", () => {
+        // =========================
+        // MUTE / UNMUTE
+        // =========================
+        muteButton.addEventListener("click", () => {
             this.video.muted = !this.video.muted;
-            this.updateMuteButton();
+            muteButton.textContent = this.video.muted ? "🔇" : "🔊";
+            muteButton.title = this.video.muted ? "Unmute" : "Mute";
+            this.resetControlsTimer();
         });
 
-        // Volume slider
-        this.volumeSlider.addEventListener("input", () => {
-            this.video.volume = parseFloat(this.volumeSlider.value);
-            if (this.video.volume > 0) {
-                this.video.muted = false;
-                this.updateMuteButton();
-            }
-        });
-
-        this.video.addEventListener("volumechange", () => {
-            this.volumeSlider.value = this.video.muted ? 0 : this.video.volume;
-            this.updateMuteButton();
-        });
-
-        // Fullscreen
-        this.fullscreenButton.addEventListener("click", () => {
-            this.toggleFullscreen();
-        });
-
-        this.overlayFullscreenButton.addEventListener("click", () => {
-            this.toggleFullscreen();
-        });
-
-        // Progress update
-        this.video.addEventListener("timeupdate", () => {
-            if (!this.video.duration || isNaN(this.video.duration)) return;
-            
-            const percentage = (this.video.currentTime / this.video.duration) * 100;
-            this.progressValue.style.width = `${percentage}%`;
-            this.updateTimeDisplay();
-        });
-
-        // Click progress to seek
-        this.progress.addEventListener("click", (event) => {
-            if (!this.video.duration) return;
-            
-            const rect = this.progress.getBoundingClientRect();
-            const percentage = (event.clientX - rect.left) / rect.width;
-            this.video.currentTime = percentage * this.video.duration;
-        });
-
-        // Double click video
-        this.video.addEventListener("dblclick", () => {
-            this.toggleFullscreen();
-        });
-
-        // Click video to play/pause
-        this.video.addEventListener("click", () => {
-            this.playButton.click();
-        });
-
-        // Show/hide overlay
-        this.video.addEventListener("enterpictureinpicture", () => {
-            this.fullscreenOverlay.classList.remove("show");
-        });
-    }
-
-    setupKeyboardShortcuts() {
-        document.addEventListener("keydown", (e) => {
-            // Only if this component is visible
-            if (!this.isConnected) return;
-            
-            // Check if we're in this component
-            const activeElement = document.activeElement;
-            if (activeElement && this.contains(activeElement)) return;
-
-            switch(e.key.toLowerCase()) {
-                case " ":
-                    e.preventDefault();
-                    this.playButton.click();
-                    break;
-                case "f":
-                    this.toggleFullscreen();
-                    break;
-                case "m":
-                    this.muteButton.click();
-                    break;
-                case "arrowright":
-                    e.preventDefault();
-                    this.forwardButton.click();
-                    break;
-                case "arrowleft":
-                    e.preventDefault();
-                    this.backwardButton.click();
-                    break;
-            }
-        });
-    }
-
-    autoHideControls() {
-        let timeout;
-        const controls = this.controls;
-        
-        this.video.addEventListener("mouseenter", () => {
-            controls.classList.remove("hidden");
-            clearTimeout(timeout);
-        });
-
-        this.video.addEventListener("mouseleave", () => {
-            if (!this.video.paused) {
-                timeout = setTimeout(() => {
-                    controls.classList.add("hidden");
-                }, 3000);
-            }
-        });
-
-        this.video.addEventListener("play", () => {
-            timeout = setTimeout(() => {
-                controls.classList.add("hidden");
-            }, 3000);
-        });
-
-        this.video.addEventListener("pause", () => {
-            controls.classList.remove("hidden");
-            clearTimeout(timeout);
-        });
-
-        // Show controls on mouse move
-        this.shadowRoot.querySelector(".player").addEventListener("mousemove", () => {
-            controls.classList.remove("hidden");
-            clearTimeout(timeout);
-            
-            if (!this.video.paused) {
-                timeout = setTimeout(() => {
-                    controls.classList.add("hidden");
-                }, 3000);
-            }
-        });
-    }
-
-    updateTimeDisplay() {
-        if (!this.video.duration) {
-            this.timeDuration.textContent = "0:00";
-            this.timeCurrent.textContent = "0:00";
-            return;
-        }
-
-        const formatTime = (seconds) => {
-            if (isNaN(seconds)) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        };
-
-        this.timeCurrent.textContent = formatTime(this.video.currentTime);
-        this.timeDuration.textContent = formatTime(this.video.duration);
-    }
-
-    updateMuteButton() {
-        if (this.video.muted || this.video.volume === 0) {
-            this.muteButton.textContent = "🔇";
-            this.muteButton.title = "Unmute";
-            this.volumeSlider.value = 0;
-        } else {
-            this.muteButton.textContent = "🔊";
-            this.muteButton.title = "Mute";
-            this.volumeSlider.value = this.video.volume;
-        }
-    }
-
-    toggleFullscreen() {
-        const player = this.shadowRoot.querySelector(".player");
-        
-        if (!document.fullscreenElement) {
-            if (player.requestFullscreen) {
-                player.requestFullscreen().catch(err => {
-                    console.error("Fullscreen error:", err);
-                });
-            }
-        } else {
-            if (document.exitFullscreen) {
+        // =========================
+        // FULLSCREEN
+        // =========================
+        const toggleFullscreen = () => {
+            if (!document.fullscreenElement) {
+                if (player.requestFullscreen) {
+                    player.requestFullscreen();
+                }
+            } else {
                 document.exitFullscreen();
             }
+        };
+
+        fullscreenButton.addEventListener("click", toggleFullscreen);
+        overlayFullscreenButton.addEventListener("click", toggleFullscreen);
+
+        // =========================
+        // UPDATE PROGRESS
+        // =========================
+        this.video.addEventListener("timeupdate", () => {
+            if (!this.video.duration || isNaN(this.video.duration)) {
+                return;
+            }
+            const percentage = (this.video.currentTime / this.video.duration) * 100;
+            progressValue.style.width = `${percentage}%`;
+        });
+
+        // =========================
+        // CLICK PROGRESS TO SEEK
+        // =========================
+        progress.addEventListener("click", (event) => {
+            if (!this.video.duration) return;
+            const rect = progress.getBoundingClientRect();
+            const percentage = (event.clientX - rect.left) / rect.width;
+            this.video.currentTime = percentage * this.video.duration;
+            this.resetControlsTimer();
+        });
+
+        // =========================
+        // DOUBLE CLICK VIDEO
+        // =========================
+        this.video.addEventListener("dblclick", () => {
+            if (!document.fullscreenElement) {
+                if (player.requestFullscreen) {
+                    player.requestFullscreen();
+                }
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // =========================
+        // MOUSE MOVE - SHOW CONTROLS
+        // =========================
+        player.addEventListener("mousemove", () => {
+            this.showControls();
+            this.resetControlsTimer();
+        });
+
+        player.addEventListener("mouseleave", () => {
+            if (!this.video.paused) {
+                this.hideControls();
+            }
+        });
+
+        // =========================
+        // FULLSCREEN CHANGE EVENTS
+        // =========================
+        document.addEventListener("fullscreenchange", () => {
+            if (document.fullscreenElement) {
+                fullscreenOverlay.classList.add("show");
+            } else {
+                fullscreenOverlay.classList.remove("show");
+            }
+        });
+
+        // =========================
+        // KEYBOARD SHORTCUTS
+        // =========================
+        document.addEventListener("keydown", (e) => {
+            if (e.target === this.video) {
+                if (e.code === "Space") {
+                    e.preventDefault();
+                    playButton.click();
+                }
+                if (e.code === "ArrowRight") {
+                    e.preventDefault();
+                    forwardButton.click();
+                }
+                if (e.code === "ArrowLeft") {
+                    e.preventDefault();
+                    backwardButton.click();
+                }
+                if (e.code === "KeyM") {
+                    muteButton.click();
+                }
+                if (e.code === "KeyF") {
+                    toggleFullscreen();
+                }
+            }
+        });
+
+        // Initial hide after 3 seconds if playing
+        this.resetControlsTimer();
+    }
+
+    // =========================
+    // AUTO-HIDE CONTROLS
+    // =========================
+    resetControlsTimer() {
+        if (this.controlsTimer) {
+            clearTimeout(this.controlsTimer);
+        }
+        this.showControls();
+        if (!this.video.paused) {
+            this.controlsTimer = setTimeout(() => {
+                this.hideControls();
+            }, 3000);
         }
     }
 
-    // Attribute changed
-    static get observedAttributes() {
-        return ["src"];
+    showControls() {
+        const controls = this.shadowRoot.querySelector(".controls");
+        const progress = this.shadowRoot.querySelector(".progress");
+        controls.classList.remove("hidden");
+        progress.classList.remove("hidden");
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "src" && newValue !== oldValue) {
-            this.video.src = newValue;
-            this.video.load();
-            this.loading.classList.remove("hidden");
-        }
-    }
-
-    // Clean up
-    disconnectedCallback() {
-        this.video.pause();
-        this.video.src = "";
-        this.video.load();
+    hideControls() {
+        const controls = this.shadowRoot.querySelector(".controls");
+        const progress = this.shadowRoot.querySelector(".progress");
+        controls.classList.add("hidden");
+        progress.classList.add("hidden");
     }
 }
 
